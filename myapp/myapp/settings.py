@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-
+import decouple
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-&!yvsk4x6#9b)4hu1p1f#0!dv(i(81!xd9=e($lw%tyfgh5r#c'
+SECRET_KEY = decouple.config("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'food_report',
 ]
 
 MIDDLEWARE = [
@@ -75,8 +77,12 @@ WSGI_APPLICATION = 'myapp.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql', 
+        'NAME': decouple.config("DB_NAME"),                
+        'USER': decouple.config("DB_USERNAME"),                
+        'PASSWORD': decouple.config("DB_PASSWORD"),       
+        'HOST': 'localhost',                   
+        'PORT': '3306',                        
     }
 }
 
@@ -121,3 +127,18 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# Email settings (Gmail Example)
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = decouple.config("EMAIL_HOST")  # e.g., 'smtp.gmail.com'
+EMAIL_PORT = decouple.config("EMAIL_PORT", cast=int)  # e.g., 587 for TLS
+EMAIL_USE_TLS = decouple.config("EMAIL_USE_TLS", cast=bool)  # True for TLS
+EMAIL_HOST_USER = decouple.config("EMAIL_HOST_USER")       # replace with your email
+EMAIL_HOST_PASSWORD = decouple.config("EMAIL_HOST_PASSWORD")     # use Gmail App Password, not your normal password
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+LOGIN_URL = 'milk_data:login'
+LOGIN_REDIRECT_URL = 'milk_data:dashboard'
